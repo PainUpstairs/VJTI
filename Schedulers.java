@@ -37,7 +37,25 @@ class time {
     }
 }
 
-public class SJF_test {
+public class Schedulers_test {
+    
+    static StringBuilder setw(int n, int z){
+        StringBuilder str = new StringBuilder();
+        String blank = " ";
+        String val = String.valueOf(z);
+        int length = val.length();
+
+        int diff = n - length;
+
+        for( int i=0 ; i<diff ; i++ ){
+            str.append(blank);
+        }
+
+        str.append(val);
+
+        return str;
+    }
+
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
 
@@ -413,8 +431,8 @@ public class SJF_test {
             System.out.println("Pro.ID\tAT\tBT\tCT\tTAT\tWT");
 
             for (int z = 0; z < num; z++) {
-                System.out.println("P" + (z + 1) + "\t" + f[z].atime() + "\t" + f[z].btime() + "\t" + compl_t[z] + "\t"
-                        + tat[z] + "\t" + wt[z] + "\t");
+                System.out.println("P" + (z + 1) + "\t" + setw(2,f[z].atime()) + "\t" + setw(2,f[z].btime()) + "\t" + setw(2,compl_t[z]) + "\t"
+                        + setw(2,tat[z]) + "\t" + setw(2,wt[z]) + "\t");
             }
         }
         // PREEMPTIVE + Round robin + Priority
@@ -430,17 +448,17 @@ public class SJF_test {
                 System.out.println("Pro.ID\tAT\tBT\tPri\tCT\tTAT\tWT\tRT");
 
                 for (int z = 0; z < num; z++) {
-                    System.out.println("P" + (z + 1) + "\t" + f[z].atime() + "\t" + f[z].btime() + "\t" + f[z].pr()
-                            + "\t" + compl_t[z] + "\t"
-                            + tat[z] + "\t" + wt[z] + "\t" + resp[z]);
+                    System.out.println("P" + (z + 1) + "\t" + setw(2,f[z].atime()) + "\t" + setw(2,f[z].btime()) + "\t" + setw(2,f[z].pr())
+                            + "\t" + setw(2,compl_t[z]) + "\t"
+                            + setw(2,tat[z]) + "\t" + setw(2,wt[z]) + "\t" + setw(2,resp[z]));
                 }
             } else {
                 System.out.println("Pro.ID\tAT\tBT\tCT\tTAT\tWT\tRT");
 
                 for (int z = 0; z < num; z++) {
                     System.out.println(
-                            "P" + (z + 1) + "\t" + f[z].atime() + "\t" + f[z].btime() + "\t" + compl_t[z] + "\t"
-                                    + tat[z] + "\t" + wt[z] + "\t" + resp[z]);
+                            "P" + (z + 1) + "\t" + setw(2,f[z].atime()) + "\t" + setw(2,f[z].btime()) + "\t" + setw(2,compl_t[z]) + "\t"
+                                    + setw(2,tat[z]) + "\t" + setw(2,wt[z]) + "\t" + setw(2,resp[z]));
                 }
             }
         }
