@@ -37,20 +37,26 @@ class time {
     }
 }
 
-public class Schedulers_test {
+public class Schedulers {
     
-    static StringBuilder setw(int n, int z){
+   static StringBuilder setw(int n, int z){
         StringBuilder str = new StringBuilder();
+        //Black Space
         String blank = " ";
+        
+        // Convert Int to String
         String val = String.valueOf(z);
         int length = val.length();
 
+        // To check how many blanks are needed
         int diff = n - length;
 
+        // Append the number of blank spaces required
         for( int i=0 ; i<diff ; i++ ){
             str.append(blank);
         }
 
+        // Append the number( thats been converted to string) 
         str.append(val);
 
         return str;
