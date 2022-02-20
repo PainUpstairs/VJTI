@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.Random;
 
 class time {
     private int arrival_t;
@@ -38,36 +39,37 @@ class time {
 }
 
 public class Schedulers {
-    
-   static StringBuilder setw(int n, int z){
+
+    // To print the numbers aesthetically
+    static StringBuilder setw(int n, int z) {
         StringBuilder str = new StringBuilder();
-        //Black Space
         String blank = " ";
-        
-        // Convert Int to String
         String val = String.valueOf(z);
         int length = val.length();
-
-        // To check how many blanks are needed
         int diff = n - length;
 
-        // Append the number of blank spaces required
-        for( int i=0 ; i<diff ; i++ ){
+        for (int i = 0; i < diff; i++) {
             str.append(blank);
         }
 
-        // Append the number( thats been converted to string) 
         str.append(val);
 
         return str;
     }
 
     public static void main(String[] args) {
+
         Scanner input = new Scanner(System.in);
+        Random rand = new Random();
+
+        // Gnatt Chart
+        StringBuilder GanttC = new StringBuilder();
+        GanttC.append("|");
 
         System.out.print(
                 "0 for Non Preemptive SJF \n1 for SJF Preemptive\n2 for Round Robin \n3 for Priority \n4 for FCFS\nEnter: ");
         int mode = input.nextInt();
+        System.out.println("");
 
         // Time Quantum
         int TQ = 0;
@@ -92,29 +94,20 @@ public class Schedulers {
             lar_highest = input.nextInt();
 
             for (int i = 0; i < num; i++) {
-                System.out.println("For P" + (i + 1));
-                System.out.print("Arrival Time: ");
-                int a = input.nextInt();
-                System.out.print("Burst Time: ");
-                int b = input.nextInt();
-                System.out.print("Priority: ");
-                int pri = input.nextInt();
+                int a = rand.nextInt(10);
+                int b = rand.nextInt(10) + 1;
+                int pri = rand.nextInt(10);
                 p[i] = new time(a, b, (i + 1), pri);
                 f[i] = new time(a, b, (i + 1), pri);
-                System.out.println("");
             }
         }
         // For others
         else {
             for (int i = 0; i < num; i++) {
-                System.out.println("For P" + (i + 1));
-                System.out.print("Arrival Time: ");
-                int a = input.nextInt();
-                System.out.print("Burst Time: ");
-                int b = input.nextInt();
+                int a = rand.nextInt(10);
+                int b = rand.nextInt(10) + 1;
                 p[i] = new time(a, b, (i + 1));
                 f[i] = new time(a, b, (i + 1));
-                System.out.println("");
             }
         }
 
@@ -129,6 +122,15 @@ public class Schedulers {
                     p[j] = temp;
                 }
             }
+        }
+
+        // For Ready Queue
+        if (mode != 2) {
+            System.out.print("Ready Queue: |");
+            for (int i = 0; i < num; i++) {
+                System.out.print(" P" + p[i].pNo() + " |");
+            }
+            System.out.println("");
         }
 
         // since class variables cant be overwritten we will have to make another
@@ -149,15 +151,11 @@ public class Schedulers {
 
         // Number of completed process
         int NPC = 0;
-        // Iteration
-        int i = 0;
 
         // Run Time ( at the moment )
         int RT = p[0].atime();
 
-        for (int j = 0; j < num; j++) {
-            System.out.println((j + 1) + "    " + p[j].atime() + "  " + tb[j] + "  " + p[j].btime());
-        }
+        int temp_getId = 0;
 
         do {
             int RQ = 0;
@@ -184,13 +182,6 @@ public class Schedulers {
                 if (idleCPU == 0) {
                     RT = p[NPC].atime();
                 }
-                System.out.println("RQ: " + RQ);
-
-                System.out.println("pno\tAT\ttb\tBT\tr");
-                for (int j = NPC; j < RQ; j++) {
-                    System.out.println(
-                            p[j].pNo() + "\t" + p[j].atime() + "\t" + tb[j] + "\t" + p[j].btime() + "\t" + r[j]);
-                }
 
                 // only SJF
                 if (mode == 0 || mode == 1) {
@@ -203,8 +194,13 @@ public class Schedulers {
                             getID = p[j].pNo();
                         }
                     }
-                    System.out.print("   getID" + getID);
-                    System.out.print("  min: " + min);
+
+                    // For Gantt Chart
+                    if (getID != temp_getId) {
+                        String s = String.valueOf(getID);
+                        GanttC.append(" P" + s + " |");
+                        temp_getId = getID;
+                    }
                 } else if (mode == 4) {
                     RT = RT + tb[NPC];
                     for (int j = 0; j < num; j++) {
@@ -213,7 +209,6 @@ public class Schedulers {
                         }
                     }
                     tb[NPC] = 0;
-                    System.out.println("RT: " + RT);
                 }
                 // Priority
                 else {
@@ -237,12 +232,17 @@ public class Schedulers {
                             }
                         }
                     }
-                    System.out.println("hp_id" + hp_id);
+
+                    // For Gantt Chart
+                    if (getID != temp_getId) {
+                        String s = String.valueOf(getID);
+                        GanttC.append(" P" + s + " |");
+                        temp_getId = getID;
+                    }
                 }
 
                 // NON-PRREEMPTIVE //
                 if (mode == 0) {
-                    System.out.println("  NPRE working");
                     for (int j = 0; j < num; j++) {
                         if (getID == p[j].pNo()) {
                             tb[j] = 0;
@@ -250,15 +250,12 @@ public class Schedulers {
                         if (getID == f[j].pNo()) {
                             RT = RT + min;
                             compl_t[j] = RT;
-                            System.out.print(compl_t[j]);
                         }
                     }
                 }
 
                 // PREEMPTIVE //
                 else if (mode == 1) {
-                    System.out.println(" PRE working");
-
                     // reducing the smallest burst time by 1
                     for (int j = NPC; j < RQ; j++) {
                         if (min == tb[j]) {
@@ -283,7 +280,6 @@ public class Schedulers {
                             for (int k = 0; k < num; k++) {
                                 if (f[k].pNo() == getID) {
                                     compl_t[k] = RT;
-                                    System.out.println("P" + getID + "completed");
                                 }
                             }
                         }
@@ -316,8 +312,6 @@ public class Schedulers {
 
                 for (int j = NPC; j < num; j++) {
                     if (tb[j] == 0) {
-                        System.out.println("working");
-
                         // to switch the substitute array of burstime
                         int st = tb[j];
                         // boolean switch
@@ -352,7 +346,6 @@ public class Schedulers {
                     RT = p[NPC].atime();
                 }
 
-                System.out.println("RR activated");
                 // For Response Time
                 for (int j = 0; j < num; j++) {
                     if (f[j].pNo() == p[NPC].pNo()) {
@@ -361,6 +354,14 @@ public class Schedulers {
                             bol[NPC] = true;
                         }
                     }
+                }
+
+                // For Gantt Chart
+                getID = p[NPC].pNo();
+                if (getID != temp_getId) {
+                    String s = String.valueOf(getID);
+                    GanttC.append(" P" + s + " |");
+                    temp_getId = getID;
                 }
 
                 // Process in CPU
@@ -378,7 +379,6 @@ public class Schedulers {
                         RQ++;
                     }
                 }
-                System.out.print("RT: " + RT);
 
                 // If the said process is completed
                 if (tb[NPC] == 0) {
@@ -410,18 +410,23 @@ public class Schedulers {
 
             }
 
-            System.out.println("  NPC: " + NPC);
-            System.out.println("pno\tAT\ttb\tBT\tpri\tr");
-            for (int j = 0; j < num; j++) {
-                System.out.println(p[j].pNo() + "\t" + p[j].atime() + "\t" + tb[j] + "\t" + p[j].btime() + "\t"
-                        + p[j].pr() + "\t" + r[j]);
-
-            }
-
-            System.out.println("i: " + i + "\n****************\n");
-
-            i++;
         } while (NPC < num);
+
+        // Ready Queue of RR
+        if (mode == 2) {
+            System.out.println("Ready Queue: " + GanttC);
+        }
+
+        // Gant chart
+        if (mode == 4) {
+            System.out.print("Gantt Chart: |");
+            for (int j = 0; j < num; j++) {
+                System.out.print(" P" + p[j].pNo() + " |");
+            }
+            System.out.println("");
+        } else {
+            System.out.println("Gantt Chart: " + GanttC);
+        }
 
         // TAT
         int[] tat = new int[num];
@@ -437,8 +442,9 @@ public class Schedulers {
             System.out.println("Pro.ID\tAT\tBT\tCT\tTAT\tWT");
 
             for (int z = 0; z < num; z++) {
-                System.out.println("P" + (z + 1) + "\t" + setw(2,f[z].atime()) + "\t" + setw(2,f[z].btime()) + "\t" + setw(2,compl_t[z]) + "\t"
-                        + setw(2,tat[z]) + "\t" + setw(2,wt[z]) + "\t");
+                System.out.println("P" + (z + 1) + "\t" + setw(2, f[z].atime()) + "\t" + setw(2, f[z].btime()) + "\t"
+                        + setw(2, compl_t[z]) + "\t"
+                        + setw(2, tat[z]) + "\t" + setw(2, wt[z]) + "\t");
             }
         }
         // PREEMPTIVE + Round robin + Priority
@@ -454,20 +460,23 @@ public class Schedulers {
                 System.out.println("Pro.ID\tAT\tBT\tPri\tCT\tTAT\tWT\tRT");
 
                 for (int z = 0; z < num; z++) {
-                    System.out.println("P" + (z + 1) + "\t" + setw(2,f[z].atime()) + "\t" + setw(2,f[z].btime()) + "\t" + setw(2,f[z].pr())
-                            + "\t" + setw(2,compl_t[z]) + "\t"
-                            + setw(2,tat[z]) + "\t" + setw(2,wt[z]) + "\t" + setw(2,resp[z]));
+                    System.out.println("P" + (z + 1) + "\t" + setw(2, f[z].atime()) + "\t" + setw(2, f[z].btime())
+                            + "\t" + setw(2, f[z].pr())
+                            + "\t" + setw(2, compl_t[z]) + "\t"
+                            + setw(2, tat[z]) + "\t" + setw(2, wt[z]) + "\t" + setw(2, resp[z]));
                 }
             } else {
                 System.out.println("Pro.ID\tAT\tBT\tCT\tTAT\tWT\tRT");
 
                 for (int z = 0; z < num; z++) {
                     System.out.println(
-                            "P" + (z + 1) + "\t" + setw(2,f[z].atime()) + "\t" + setw(2,f[z].btime()) + "\t" + setw(2,compl_t[z]) + "\t"
-                                    + setw(2,tat[z]) + "\t" + setw(2,wt[z]) + "\t" + setw(2,resp[z]));
+                            "P" + (z + 1) + "\t" + setw(2, f[z].atime()) + "\t" + setw(2, f[z].btime()) + "\t"
+                                    + setw(2, compl_t[z]) + "\t"
+                                    + setw(2, tat[z]) + "\t" + setw(2, wt[z]) + "\t" + setw(2, resp[z]));
                 }
             }
         }
+        System.out.println("");
         input.close();
     }
 }
